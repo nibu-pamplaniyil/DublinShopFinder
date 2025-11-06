@@ -1,0 +1,8 @@
+.search-container { max-width: 900px; margin: 0 auto; padding: 16px; }
+.controls { display:flex; gap:8px; margin-bottom:12px; align-items:center; }
+.controls input[type="number"] { width:100px; }
+.results { display:flex; flex-direction:column; gap:12px; }
+.place-card { display:flex; gap:12px; padding:12px; border:1px solid #ddd; border-radius:8px; }
+.photo img { width:120px; height:80px; object-fit:cover; border-radius:6px; }
+.placeholder { width:120px; height:80px; background:#eee; display:flex; align-items:center; justify-content:center; color:#666; border-radius:6px; }
+.info h3 { margin:0 0 4px 0; }

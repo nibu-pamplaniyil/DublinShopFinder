@@ -1,0 +1,30 @@
+<div class="search-container">
+  <h2>Find shops near me (Ireland)</h2>
+
+  <div class="controls">
+    <input [(ngModel)]="query" placeholder="What are you looking for? (e.g. clothes)" />
+    <input type="number" [(ngModel)]="radius" /> <span>meters radius</span>
+    <button (click)="doSearch()">Search</button>
+  </div>
+
+  <div *ngIf="loading">Searching…</div>
+  <div *ngIf="error" class="error">{{ error }}</div>
+
+  <div *ngIf="places && places.length === 0 && !loading">No results.</div>
+
+  <div class="results">
+    <div class="place-card" *ngFor="let p of places">
+      <div class="photo">
+        <img *ngIf="p.photoUrl" [src]="p.photoUrl" alt="{{p.name}}" />
+        <div *ngIf="!p.photoUrl" class="placeholder">No image</div>
+      </div>
+      <div class="info">
+        <h3>{{ p.name }}</h3>
+        <p>{{ p.address }}</p>
+        <p *ngIf="p.openingHoursSummary">{{ p.openingHoursSummary }}</p>
+        <p *ngIf="p.isOpenNow !== null">Status: {{ p.isOpenNow ? 'Open' : 'Closed' }}</p>
+        <a [href]="getDirectionsUrl(p)" target="_blank" rel="noopener">Get directions</a>
+      </div>
+    </div>
+  </div>
+</div>
