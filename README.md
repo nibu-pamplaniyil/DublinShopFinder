@@ -63,7 +63,7 @@ A web application to search for shops around Dublin using location-based queries
 
 1. **Clone the repository:**
    ```bash
-   git clone <your-repo-url>
+   git clone <repo-url>
    cd ShopFinderBackend
    ```
 2. **Configure your Google Places API key** in appsettings.json
