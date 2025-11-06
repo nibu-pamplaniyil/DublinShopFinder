@@ -62,10 +62,10 @@ A web application to search for shops around Dublin using location-based queries
 ### Backend (ASP.NET Core 9 API)
 
 1. **Clone the repository:**
-  ```bash
-  git clone <your-repo-url>
-  cd ShopFinderBackend
-```
+   ```bash
+   git clone <your-repo-url>
+   cd ShopFinderBackend
+   ```
 2. **Configure your Google Places API key** in appsettings.json
 3. **Restore dependencies:**
    ```bash
