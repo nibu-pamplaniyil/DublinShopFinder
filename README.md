@@ -65,6 +65,53 @@ A web application to search for shops around Dublin using location-based queries
   ```bash
   git clone <your-repo-url>
   cd ShopFinderBackend
+```
 2. **Configure your Google Places API key** in appsettings.json
-3. **Restore dependencies:
-    dotnet restore
+3. **Restore dependencies:**
+   ```bash
+   dotnet restore
+   ```
+4. **Trust the development certificate for HTTPS:**
+   ```bash
+   dotnet dev-certs https --trust
+   ```
+5. **Run the API**
+   ```bash
+   dotnet run
+   ```
+
+### Frontend (Angular)
+
+1. **Navigate to the frontend folder:**
+   ```bash
+   cd ShopFinderFrontend
+   ```
+2. **Install dependencies:**
+   ```bash
+   npm install
+   ```
+3. **Run the Angular app:**
+   ```bash
+   ng serve
+   ```
+
+### Running the Application
+
+1. **Start the ASP.NET Core API** first.
+2. **Start the Angular frontend.**
+3. **Open a browser** and navigate to:
+4. **Enter a query** in the search box (e.g., clothes, cafe).
+5. **Allow location access** for accurate search results.
+
+### API Endpoints
+
+**Query Parameters:**
+| Parameter | Type   | Description                               |
+|-----------|--------|-------------------------------------------|
+| query     | string | Name or category of the shop (required)   |
+| lat       | double | Latitude of user location (required)      |
+| lng       | double | Longitude of user location (required)     |
+| radius    | int    | Search radius in meters (default: 5000)   |
+
+
+   
