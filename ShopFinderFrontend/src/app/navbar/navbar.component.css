@@ -1,0 +1,68 @@
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  /* Reduced vertical padding slightly for a tighter look, consistent with the screenshot */
+  padding: 10px 40px; 
+  /* Light background, matches the subtle gray in the screenshot */
+  background-color: #f1f1f1; 
+  color: #0a0a0a;
+  /* Subtle bottom shadow */
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); 
+  /* Critical for keeping it fixed at the top */
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  /* Use a modern, easy-to-read font */
+  font-family: 'Inter', sans-serif; 
+}
+
+/* --- LOGO STYLES (MyShopFinder) --- */
+.navbar .logo a {
+  text-decoration: none;
+  /* Using a deep, rich color for the logo, like a dark forest green or deep blue */
+  color: #1a4d3e; 
+  /* Slightly larger and bolder than the links */
+  font-size: 1.8rem; 
+  font-weight: 700; /* Bold */
+  letter-spacing: -0.5px;
+}
+
+/* --- NAVIGATION LINKS CONTAINER (Search, Login) --- */
+.navbar .nav-links {
+    /* Ensures the links stay tightly grouped to the right */
+    display: flex;
+    align-items: center;
+    gap: 25px; /* Added consistent space between links */
+}
+
+/* --- INDIVIDUAL LINK STYLES --- */
+.navbar .nav-links a {
+  /* Removed margin-left to use gap property above for better control */
+  margin-left: 0;
+  text-decoration: none;
+  /* Dark gray text for high contrast */
+  color: #333333; 
+  font-weight: 500;
+  font-size: 1.0rem;
+  transition: color 0.3s ease;
+  /* Added padding for larger clickable area */
+  padding: 5px 0; 
+}
+
+/* --- HOVER EFFECT --- */
+.navbar .nav-links a:hover {
+  /* Change color on hover, using a shade of Irish green or orange/gold */
+  color: #4CAF50; 
+}
+
+/* --- RESPONSIVENESS: Adjust padding for mobile screens --- */
+@media (max-width: 768px) {
+  .navbar {
+    padding: 10px 20px;
+  }
+  
+  .navbar .logo a {
+    font-size: 1.5rem;
+  }
+}

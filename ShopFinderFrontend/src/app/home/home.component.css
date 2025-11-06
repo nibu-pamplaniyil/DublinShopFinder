@@ -1,0 +1,106 @@
+.home-container {
+    /* Reduced height slightly to accommodate a sticky navbar, keeping it responsive */
+    height: 90vh; 
+    width: 100%;
+    /* Ensure your image path is correct */
+    background-image: url('../../assets/images/img.jpg'); 
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    color: white;
+    /* Relative positioning is required for the ::before pseudo-element filter */
+    position: relative; 
+    font-family: 'Inter', sans-serif; /* Using Inter for a modern look */
+}
+
+/* Screen-wide Dark Overlay Filter (This darkens the entire background image) */
+.home-container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    /* A lighter dark tint applied to the whole screen */
+    background: rgba(0, 0, 0, 0.4); 
+    z-index: 1; 
+}
+
+/* -------------------------------------------------------------
+ * 2. OVERLAY (The Specific Dark Box Behind the Text)
+ * ------------------------------------------------------------- */
+.overlay {
+    /* This ensures the content is visible on top of the full-screen filter */
+    position: relative; 
+    z-index: 2; 
+
+    /* The distinct dark background box shown in the screenshot */
+    background: rgba(0, 0, 0, 0.75); /* Darker opacity to make text pop */
+    padding: 60px 40px; /* Increased padding for more visual weight */
+    border-radius: 6px;
+    /* Max width controls the size of the central content box */
+    max-width: 900px; 
+    width: 90%; 
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4); /* Adds depth */
+}
+
+/* -------------------------------------------------------------
+ * 3. TEXT AND BUTTON STYLES
+ * ------------------------------------------------------------- */
+.overlay h1 {
+    font-size: 3.5rem; /* Larger text for maximum impact */
+    font-weight: 800; /* Extra bold */
+    margin-bottom: 15px;
+    color: #fff;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.4);
+}
+
+.overlay p {
+    font-size: 1.3rem; /* Highly readable body text */
+    max-width: 700px;
+    margin: 0 auto 35px; 
+    line-height: 1.5;
+    font-weight: 300; /* Lighter weight for body text */
+}
+
+.overlay button {
+    padding: 15px 35px; /* Large, prominent button */
+    font-size: 1.15rem;
+    background-color: #007bff; /* Vibrant Blue */
+    border: none;
+    border-radius: 8px;
+    color: white;
+    cursor: pointer;
+    font-weight: 600;
+    transition: background-color 0.3s ease, transform 0.1s ease;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+.overlay button:hover {
+    background-color: #0066d9; /* Darker blue on hover */
+    transform: translateY(-2px); /* Subtle lift effect */
+}
+
+/* --- Mobile Responsiveness --- */
+@media (max-width: 768px) {
+    .home-container {
+        height: 70vh; 
+    }
+    .overlay {
+        padding: 30px 20px;
+    }
+    .overlay h1 {
+        font-size: 2rem;
+    }
+    .overlay p {
+        font-size: 1rem;
+    }
+    .overlay button {
+        padding: 12px 25px;
+        font-size: 1rem;
+    }
+}
