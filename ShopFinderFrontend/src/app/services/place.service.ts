@@ -20,7 +20,7 @@ export interface Place {
   providedIn: 'root'
 })
 export class PlaceService {
-  private apiBase = 'http://localhost:5108/api/places'; // update if backend runs on different port
+  private apiBase = 'http://localhost:5108/api/places'; 
 
   constructor(private http: HttpClient) {}
 

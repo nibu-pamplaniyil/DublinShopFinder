@@ -1,5 +1,7 @@
 using System.Net.Http.Json;
 using Microsoft.Extensions.Options;
+using Microsoft.Extensions.Caching.Distributed;
+using System.Text.Json;
 
 // Put this class in Services/GooglePlacesService.cs
 public class GooglePlacesService : IGooglePlacesService
@@ -7,28 +9,34 @@ public class GooglePlacesService : IGooglePlacesService
     private readonly HttpClient _http;
     private readonly string _apiKey;
     private readonly ILogger<GooglePlacesService> _logger;
+    private readonly IDistributedCache _cache;
 
-    public GooglePlacesService(IHttpClientFactory factory, IOptions<GoogleOptions> opts, ILogger<GooglePlacesService> logger)
+    public GooglePlacesService(IHttpClientFactory factory, IOptions<GoogleOptions> opts, ILogger<GooglePlacesService> logger, IDistributedCache cache)
     {
         _http = factory.CreateClient();
         _apiKey = opts.Value.ApiKey;
         _logger = logger;
+        _cache = cache;
     }
 
     public async Task<IEnumerable<PlaceDto>> SearchPlacesAsync(string query, double lat, double lng, int radius = 5000)
     {
-        // Use Text Search to allow flexible queries like "clothes"
-        // endpoint: https://maps.googleapis.com/maps/api/place/textsearch/json
+        var cacheKey = $"places_{query}_{lat}_{lng}_{radius}";
+        var cachedData = await _cache.GetStringAsync(cacheKey);
+        if (cachedData != null)
+        {
+            _logger.LogInformation("Returning cached results for query: {Query}", query);
+            return JsonSerializer.Deserialize<IEnumerable<PlaceDto>>(cachedData);
+        }
         var location = $"{lat},{lng}";
         var url = $"https://maps.googleapis.com/maps/api/place/textsearch/json?query={Uri.EscapeDataString(query)}&location={location}&radius={radius}&key={_apiKey}";
         var resp = await _http.GetFromJsonAsync<GoogleTextSearchResponse>(url);
 
         if (resp == null || resp.Results == null) return Enumerable.Empty<PlaceDto>();
 
-        // Map results and fetch details for each (to get opening hours and phone)
         var places = new List<PlaceDto>();
 
-        foreach (var r in resp.Results.Take(10)) // limit to first 10 to avoid too many requests
+        foreach (var r in resp.Results.Take(10))
         {
             var p = new PlaceDto
             {
@@ -42,7 +50,7 @@ public class GooglePlacesService : IGooglePlacesService
                 Types = r.Types ?? Enumerable.Empty<string>()
             };
 
-            // Get details for opening_hours and phone
+            
             try
             {
                 var details = await GetPlaceDetailsAsync(r.Place_id);
@@ -64,26 +72,66 @@ public class GooglePlacesService : IGooglePlacesService
             places.Add(p);
         }
 
+        var cacheEntryOptions = new DistributedCacheEntryOptions
+        {
+            AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(10)
+        };
+
+        var serialized = JsonSerializer.Serialize(places);
+        await _cache.SetStringAsync(cacheKey, serialized, cacheEntryOptions);
+
+        _logger.LogInformation("Cached new results for query: {Query}", query);
+
         return places;
     }
 
     public async Task<byte[]> GetPhotoAsync(string photoReference, int maxWidth = 400)
     {
+        var cacheKey = $"photo_{photoReference}_{maxWidth}";
+        var cachedPhoto = await _cache.GetAsync(cacheKey);
+        if (cachedPhoto != null)
+        {
+            _logger.LogInformation("Returning cached photo: {PhotoReference}", photoReference);
+            return cachedPhoto;
+        }
+
         var url = $"https://maps.googleapis.com/maps/api/place/photo?photoreference={Uri.EscapeDataString(photoReference)}&maxwidth={maxWidth}&key={_apiKey}";
         var resp = await _http.GetAsync(url);
         resp.EnsureSuccessStatusCode();
-        return await resp.Content.ReadAsByteArrayAsync();
+        var photoBytes = await resp.Content.ReadAsByteArrayAsync();
+        await _cache.SetAsync(cacheKey, photoBytes, new DistributedCacheEntryOptions
+        {
+            AbsoluteExpirationRelativeToNow = TimeSpan.FromHours(1)
+        });
+
+        return photoBytes;
     }
 
     private async Task<PlaceDetailsResponse> GetPlaceDetailsAsync(string placeId)
     {
+        var cacheKey = $"details_{placeId}";
+        var cached = await _cache.GetStringAsync(cacheKey);
+        if (cached != null)
+        {
+            _logger.LogInformation("Returning cached details for {PlaceId}", placeId);
+            return JsonSerializer.Deserialize<PlaceDetailsResponse>(cached);
+        }
+
         var fields = "opening_hours,formatted_phone_number,weekday_text";
-        // fields param: list of fields you need. Use "opening_hours,formatted_phone_number" at least.
         var url = $"https://maps.googleapis.com/maps/api/place/details/json?place_id={Uri.EscapeDataString(placeId)}&fields=name,opening_hours,formatted_phone_number&key={_apiKey}";
-        return await _http.GetFromJsonAsync<PlaceDetailsResponse>(url);
+        var result = await _http.GetFromJsonAsync<PlaceDetailsResponse>(url);
+        if (result != null)
+        {
+            await _cache.SetStringAsync(cacheKey, JsonSerializer.Serialize(result), new DistributedCacheEntryOptions
+            {
+                AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(30)
+            });
+        }
+
+        return result;
     }
 
-    // Response DTOs for Google JSON (trimmed)
+    
     private class GoogleTextSearchResponse
     {
         public IEnumerable<TextResult> Results { get; set; }

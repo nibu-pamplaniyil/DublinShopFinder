@@ -28,6 +28,8 @@ public class PlacesController : ControllerBase
         try
         {
             var bytes = await _places.GetPhotoAsync(photoreference, maxwidth);
+            if (bytes == null || bytes.Length == 0)
+                return NotFound();
             return File(bytes, "image/jpeg");
         }
         catch (Exception ex)

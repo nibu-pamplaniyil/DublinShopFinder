@@ -22,9 +22,15 @@ builder.Services.Configure<GoogleOptions>(builder.Configuration.GetSection("Goog
 builder.Services.AddScoped<IGooglePlacesService, GooglePlacesService>();
 builder.Services.AddControllers();
 
+builder.Services.AddStackExchangeRedisCache(options =>
+{
+    options.Configuration = builder.Configuration.GetConnectionString("Redis");
+    options.InstanceName = "GooglePlaces_";
+});
+
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
